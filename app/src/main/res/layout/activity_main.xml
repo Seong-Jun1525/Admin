@@ -19,18 +19,18 @@
         <soup.neumorphism.NeumorphImageView
             style="@style/Widget.Neumorph.ImageView"
             android:id="@+id/setting"
-            app:neumorph_shapeType="pressed"
+            app:neumorph_shapeType="flat"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:padding="25dp"
             android:src="@drawable/setting" />
-        <soup.neumorphism.NeumorphTextView
-            style="@style/Widget.Neumorph.TextView"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_text"
-            android:textSize="30sp"
-            android:textColor="@color/background" />
+            android:textSize="33sp"
+            android:textStyle="bold"
+            android:textColor="@color/mainText" />
         <soup.neumorphism.NeumorphImageView
             style="@style/Widget.Neumorph.ImageView"
             android:id="@+id/darkMode"
@@ -39,19 +39,12 @@
             app:neumorph_shapeType="flat"
             android:padding="20dp"
             android:src="@drawable/dark" />
-        <soup.neumorphism.NeumorphImageView
-            style="@style/Widget.Neumorph.ImageView"
-            android:id="@+id/lightMode"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            app:neumorph_shapeType="flat"
-            android:padding="20dp"
-            android:src="@drawable/light" />
     </com.google.android.flexbox.FlexboxLayout>
 
     <!--  body  -->
     <soup.neumorphism.NeumorphCardView
         style="@style/Widget.Neumorph.CardView"
+        android:id="@+id/mainCardView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="6"
@@ -190,6 +183,7 @@
                     </soup.neumorphism.NeumorphCardView>
                 </com.google.android.flexbox.FlexboxLayout>
             </LinearLayout>
+            <!-- 회원 관리 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -226,6 +220,7 @@
                     </soup.neumorphism.NeumorphCardView>
                     <soup.neumorphism.NeumorphButton
                         style="@style/Widget.Neumorph.Button"
+                        android:id="@+id/userSearchBtn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/search"
@@ -247,6 +242,7 @@
                         android:layout_height="wrap_content" />
                 </soup.neumorphism.NeumorphCardView>
             </LinearLayout>
+            <!-- 상품 관리 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -260,6 +256,7 @@
                     android:textStyle="bold"
                     android:textColor="@color/mainText" />
             </LinearLayout>
+            <!-- 결제 내역 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -273,6 +270,7 @@
                     android:textStyle="bold"
                     android:textColor="@color/mainText" />
             </LinearLayout>
+            <!-- 상품 등록 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -285,6 +283,87 @@
                     android:textSize="25sp"
                     android:textStyle="bold"
                     android:textColor="@color/mainText" />
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <soup.neumorphism.NeumorphCardView
+                            style="@style/Widget.Neumorph.CardView"
+                            android:id="@+id/input_productName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            app:neumorph_shapeType="pressed">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:hint="상품명"
+                                android:inputType="text"
+                                android:textColor="@color/mainText"/>
+                        </soup.neumorphism.NeumorphCardView>
+                        <soup.neumorphism.NeumorphCardView
+                            style="@style/Widget.Neumorph.CardView"
+                            android:id="@+id/input_productQuantity"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            app:neumorph_shapeType="pressed">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="number"
+                                android:hint="상품재고"
+                                android:textColor="@color/mainText"/>
+                        </soup.neumorphism.NeumorphCardView>
+                        <soup.neumorphism.NeumorphCardView
+                            style="@style/Widget.Neumorph.CardView"
+                            android:id="@+id/input_productCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            app:neumorph_shapeType="pressed">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:hint="상품카테고리"
+                                android:inputType="text"
+                                android:textColor="@color/mainText"/>
+                        </soup.neumorphism.NeumorphCardView>
+                        <soup.neumorphism.NeumorphCardView
+                            style="@style/Widget.Neumorph.CardView"
+                            android:id="@+id/input_productPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            app:neumorph_shapeType="pressed">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="number"
+                                android:hint="상품가격"
+                                android:textColor="@color/mainText"/>
+                        </soup.neumorphism.NeumorphCardView>
+                        <soup.neumorphism.NeumorphButton
+                            style="@style/Widget.Neumorph.Button"
+                            android:id="@+id/createQRBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="QR생성"
+                            app:neumorph_shapeType="flat" />
+                        <soup.neumorphism.NeumorphButton
+                            style="@style/Widget.Neumorph.Button"
+                            android:id="@+id/createProductBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="20dp"
+                            android:text="상품등록"
+                            app:neumorph_shapeType="flat" />
+                    </LinearLayout>
+                </ScrollView>
             </LinearLayout>
         </ViewFlipper>
     </soup.neumorphism.NeumorphCardView>
@@ -296,6 +375,7 @@
         android:layout_weight="1">
         <soup.neumorphism.NeumorphCardView
             style="@style/Widget.Neumorph.CardView"
+            android:id="@+id/footer_menu"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <com.google.android.flexbox.FlexboxLayout

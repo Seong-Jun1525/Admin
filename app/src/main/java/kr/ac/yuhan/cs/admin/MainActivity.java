@@ -2,7 +2,11 @@ package kr.ac.yuhan.cs.admin;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -12,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -25,13 +30,20 @@ import java.util.Random;
 
 import kr.ac.yuhan.cs.admin.adapter.MemberAdapter;
 import kr.ac.yuhan.cs.admin.data.MemberData;
+import kr.ac.yuhan.cs.admin.func.ChangeTextColor;
 import kr.ac.yuhan.cs.admin.ui.login.LoginActivity;
+import kr.ac.yuhan.cs.admin.util.ChangeMode;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphCardView;
 import soup.neumorphism.NeumorphImageView;
 
 public class MainActivity extends AppCompatActivity {
-    
+
+    private int mode = 0;
+
+    // body
+    private NeumorphCardView mainCardView;
+    private NeumorphCardView footer_menu;
     // 하단 Bar 메뉴
     private NeumorphImageView homeBtn;
     private NeumorphImageView memberBtn;
@@ -39,17 +51,26 @@ public class MainActivity extends AppCompatActivity {
     private NeumorphImageView payHistoryBtn;
     private NeumorphImageView productPushBtn;
 
+    // 회원 메뉴
+    private NeumorphButton userSearchBtn;
+
     // HOME 메뉴
     private NeumorphCardView adminBtn;
     private NeumorphCardView adminScheduleBtn;
     private NeumorphCardView callBtn;
     private NeumorphCardView login;
 
+    // 상품등록 메뉴
+    private NeumorphCardView input_productName;
+    private NeumorphCardView input_productQuantity;
+    private NeumorphCardView input_productCategory;
+    private NeumorphCardView input_productPrice;
+    private NeumorphButton createQRBtn;
+    private NeumorphButton createProductBtn;
+
     // 상단 버튼 이미지
     private NeumorphImageView setting;
-    private NeumorphImageView darkMode;
-    private NeumorphImageView lightMode;
-
+    private NeumorphImageView changeMode;
 
     // HOME 메뉴 이미지
     private ImageView adminSchedule;
@@ -68,11 +89,23 @@ public class MainActivity extends AppCompatActivity {
     private int backgroundColor;
     private int mainBackgroundColor = Color.rgb(236, 240, 243);
     private int darkModeBackgroundColor = Color.rgb(97, 97, 97);
+    private int btnColor = Color.rgb(0, 174, 142);
+
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        listView = findViewById(R.id.listView);
+
+        // 가짜 데이터 생성
+        ArrayList<MemberData> fakeDataList = createFakeData();
+
+        // 어댑터 설정
+        MemberAdapter adapter = new MemberAdapter(this, fakeDataList);
+        listView.setAdapter(adapter);
 
         final ViewFlipper vFlipper;
         vFlipper = (ViewFlipper) findViewById(R.id.viewFlipper1);
@@ -84,6 +117,14 @@ public class MainActivity extends AppCompatActivity {
         
         Drawable backgroundDrawable = main.getBackground();
         mainBackgroundColor = ((ColorDrawable) backgroundDrawable).getColor();
+
+        createQRBtn = (NeumorphButton) findViewById(R.id.createQRBtn);
+        createProductBtn = (NeumorphButton) findViewById(R.id.createProductBtn);
+        userSearchBtn = (NeumorphButton) findViewById(R.id.userSearchBtn);
+
+        createQRBtn.setBackgroundColor(btnColor);
+        createProductBtn.setBackgroundColor(btnColor);
+        userSearchBtn.setBackgroundColor(btnColor);
 
         callBtn = (NeumorphCardView) findViewById(R.id.callBtn);
         callBtn.setOnClickListener(new View.OnClickListener() {
@@ -104,122 +145,239 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        darkMode = (NeumorphImageView) findViewById(R.id.darkMode);
-        darkMode.setOnClickListener(new View.OnClickListener() {
+        changeMode = (NeumorphImageView) findViewById(R.id.darkMode);
+        changeMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 // 클릭될 때 ShapeType을 'pressed'로 변경
-                darkMode.setShapeType(1);
+                changeMode.setShapeType(1);
 
                 // 클릭된 후에는 다시 FLAT으로 변경
                 v.postDelayed(new Runnable() {
                     @Override
-                    public void run() {darkMode.setShapeType(0);}
+                    public void run() {changeMode.setShapeType(0);}
                 }, 200);
 
-                // 다크모드 색상 적용
-                backgroundColor = darkModeBackgroundColor;
-                main.setBackgroundColor(backgroundColor);
+                if(mode == 0) {
+                    // 다크모드 색상 적용
+                    backgroundColor = darkModeBackgroundColor;
+                    main.setBackgroundColor(backgroundColor);
 
-                // 폰트 색상 변경
-                // 루트 뷰에서 모든 TextView를 찾아서 색상을 변경
-                changeDarkTextColor(main, Color.WHITE);
+                    // 폰트 색상 변경
+                    // 루트 뷰에서 모든 TextView를 찾아서 색상을 변경
+//                    ChangeTextColor.changeDarkTextColor(main, Color.WHITE);
+                    ChangeMode.applyTheme(main, mode);
 
-                // 이미지 색상 변경
-                adminList = (ImageView) findViewById(R.id.adminList);
-                adminList.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    footer_menu = (NeumorphCardView) findViewById(R.id.footer_menu);
+                    footer_menu.setShadowColorDark(Color.BLACK);
+                    footer_menu.setShadowColorLight(Color.GRAY);
 
-                call = (ImageView) findViewById(R.id.call);
-                call.setImageResource(R.drawable.phone);
-                call.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    mainCardView = (NeumorphCardView) findViewById(R.id.mainCardView);
+                    mainCardView.setShadowColorDark(Color.BLACK);
+                    mainCardView.setShadowColorLight(Color.GRAY);
 
-                adminLogin = (ImageView) findViewById(R.id.adminLogin);
-                adminLogin.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    // 관리자 메인 페이지 CardView
+                    adminBtn.setShadowColorDark(Color.BLACK);
+                    adminBtn.setShadowColorLight(Color.GRAY);
 
-                adminSchedule = (ImageView) findViewById(R.id.adminSchedule);
-                adminSchedule.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    adminScheduleBtn.setShadowColorDark(Color.BLACK);
+                    adminScheduleBtn.setShadowColorLight(Color.GRAY);
 
-                usersIcon = (NeumorphImageView)  findViewById(R.id.memberBtn);
-                usersIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    callBtn.setShadowColorDark(Color.BLACK);
+                    callBtn.setShadowColorLight(Color.GRAY);
 
-                productIcon = (NeumorphImageView) findViewById(R.id.productBtn);
-                productIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    login.setShadowColorDark(Color.BLACK);
+                    login.setShadowColorLight(Color.GRAY);
 
-                homeIcon = (NeumorphImageView) findViewById(R.id.homeBtn);
-                homeIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    // 상품등록 페이지 CardView
+                    input_productName = (NeumorphCardView) findViewById(R.id.input_productName);
+                    input_productName.setShadowColorDark(Color.BLACK);
+                    input_productName.setShadowColorLight(Color.GRAY);
 
-                paymentIcon = (NeumorphImageView) findViewById(R.id.payHistoryBtn);
-                paymentIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    input_productQuantity = (NeumorphCardView) findViewById(R.id.input_productQuantity);
+                    input_productQuantity.setShadowColorDark(Color.BLACK);
+                    input_productQuantity.setShadowColorLight(Color.GRAY);
 
-                productRegisterIcon = (NeumorphImageView) findViewById(R.id.productPushBtn);
-                productRegisterIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    input_productCategory = (NeumorphCardView) findViewById(R.id.input_productCategory);
+                    input_productCategory.setShadowColorDark(Color.BLACK);
+                    input_productCategory.setShadowColorLight(Color.GRAY);
 
-                setting = (NeumorphImageView) findViewById(R.id.setting);
-                setting.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    input_productPrice = (NeumorphCardView) findViewById(R.id.input_productPrice);
+                    input_productPrice.setShadowColorDark(Color.BLACK);
+                    input_productPrice.setShadowColorLight(Color.GRAY);
 
-                // dark 이미지로 변경
-                darkMode.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-                // dark 이미지로 변경
-                lightMode.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-            }
-        });
+                    createQRBtn = (NeumorphButton) findViewById(R.id.createQRBtn);
+                    createQRBtn.setShadowColorDark(Color.BLACK);
+                    createQRBtn.setShadowColorLight(Color.GRAY);
 
-        lightMode = (NeumorphImageView) findViewById(R.id.lightMode);
-        lightMode.setOnClickListener(new View.OnClickListener() {
+                    createProductBtn = (NeumorphButton) findViewById(R.id.createProductBtn);
+                    createProductBtn.setShadowColorDark(Color.BLACK);
+                    createProductBtn.setShadowColorLight(Color.GRAY);
 
-            @Override
-            public void onClick(View v) {
-                // 클릭될 때 ShapeType을 'pressed'로 변경
-                lightMode.setShapeType(1);
+                    // 이미지 색상 변경
+                    adminList = (ImageView) findViewById(R.id.adminList);
+                    adminList.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
-                // 클릭된 후에는 다시 FLAT으로 변경
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {lightMode.setShapeType(0);}
-                }, 200);
+                    call = (ImageView) findViewById(R.id.call);
+                    call.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
-                // 라이트모드 색상 적용
-                backgroundColor = mainBackgroundColor;
-                main.setBackgroundColor(backgroundColor);
+                    adminLogin = (ImageView) findViewById(R.id.adminLogin);
+                    adminLogin.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
-                // 폰트 색상 변경
-                changeLightTextColor(main, Color.rgb(0, 105, 97));
+                    adminSchedule = (ImageView) findViewById(R.id.adminSchedule);
+                    adminSchedule.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
-                // 라이트모드에 맞는 이미지로 변경
-                adminList = (ImageView) findViewById(R.id.adminList);
-                adminList.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    // 하단 메뉴
+                    usersIcon = (NeumorphImageView)  findViewById(R.id.memberBtn);
+                    usersIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    usersIcon.setShadowColorDark(Color.BLACK);
+                    usersIcon.setShadowColorLight(Color.GRAY);
 
-                call = (ImageView) findViewById(R.id.call);
-                call.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    productIcon = (NeumorphImageView) findViewById(R.id.productBtn);
+                    productIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    productIcon.setShadowColorDark(Color.BLACK);
+                    productIcon.setShadowColorLight(Color.GRAY);
 
-                adminLogin = (ImageView) findViewById(R.id.adminLogin);
-                adminLogin.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    homeIcon = (NeumorphImageView) findViewById(R.id.homeBtn);
+                    homeIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    homeIcon.setShadowColorDark(Color.BLACK);
+                    homeIcon.setShadowColorLight(Color.GRAY);
 
-                adminSchedule = (ImageView) findViewById(R.id.adminSchedule);
-                adminSchedule.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    paymentIcon = (NeumorphImageView) findViewById(R.id.payHistoryBtn);
+                    paymentIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    paymentIcon.setShadowColorDark(Color.BLACK);
+                    paymentIcon.setShadowColorLight(Color.GRAY);
 
-                usersIcon = (NeumorphImageView)  findViewById(R.id.memberBtn);
-                usersIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    productRegisterIcon = (NeumorphImageView) findViewById(R.id.productPushBtn);
+                    productRegisterIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    productRegisterIcon.setShadowColorDark(Color.BLACK);
+                    productRegisterIcon.setShadowColorLight(Color.GRAY);
 
-                productIcon = (NeumorphImageView) findViewById(R.id.productBtn);
-                productIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    setting = (NeumorphImageView) findViewById(R.id.setting);
+                    setting.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    setting.setShadowColorDark(Color.BLACK);
+                    setting.setShadowColorLight(Color.GRAY);
 
-                homeIcon = (NeumorphImageView) findViewById(R.id.homeBtn);
-                homeIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    // Mode Image 및 색상 변경
+                    changeMode.setImageResource(R.drawable.light);
+                    changeMode.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                    changeMode.setShadowColorDark(Color.BLACK);
+                    changeMode.setShadowColorLight(Color.GRAY);
 
-                paymentIcon = (NeumorphImageView) findViewById(R.id.payHistoryBtn);
-                paymentIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    mode++;
+                }
+                else if(mode == 1) {
+                    // 라이트모드 색상 적용
+                    backgroundColor = mainBackgroundColor;
+                    main.setBackgroundColor(backgroundColor);
+                    // 폰트 색상 변경
+//                    ChangeTextColor.changeLightTextColor(main, Color.rgb(0, 105, 97));
+                    ChangeMode.applyTheme(main, mode);
 
-                productRegisterIcon = (NeumorphImageView) findViewById(R.id.productPushBtn);
-                productRegisterIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    footer_menu = (NeumorphCardView) findViewById(R.id.footer_menu);
+                    footer_menu.setShadowColorDark(Color.rgb(217, 217, 217));
+                    footer_menu.setShadowColorLight(Color.WHITE);
 
-                setting = (NeumorphImageView) findViewById(R.id.setting);
-                setting.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    mainCardView = (NeumorphCardView) findViewById(R.id.mainCardView);
+                    mainCardView.setShadowColorDark(Color.rgb(217, 217, 217));
+                    mainCardView.setShadowColorLight(Color.WHITE);
 
-                // dark 이미지로 변경
-                darkMode.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-                // dark 이미지로 변경
-                lightMode.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    // 관리자 메인 페이지 cardview
+                    adminBtn.setShadowColorDark(Color.rgb(217, 217, 217));
+                    adminBtn.setShadowColorLight(Color.WHITE);
+
+                    adminScheduleBtn.setShadowColorDark(Color.rgb(217, 217, 217));
+                    adminScheduleBtn.setShadowColorLight(Color.WHITE);
+
+                    callBtn.setShadowColorDark(Color.rgb(217, 217, 217));
+                    callBtn.setShadowColorLight(Color.WHITE);
+
+                    login.setShadowColorDark(Color.rgb(217, 217, 217));
+                    login.setShadowColorLight(Color.WHITE);
+
+                    // 상품등록 페이지 CardView
+                    input_productName = (NeumorphCardView) findViewById(R.id.input_productName);
+                    input_productName.setShadowColorDark(Color.rgb(217, 217, 217));
+                    input_productName.setShadowColorLight(Color.WHITE);
+
+                    input_productQuantity = (NeumorphCardView) findViewById(R.id.input_productQuantity);
+                    input_productQuantity.setShadowColorDark(Color.rgb(217, 217, 217));
+                    input_productQuantity.setShadowColorLight(Color.WHITE);
+
+                    input_productCategory = (NeumorphCardView) findViewById(R.id.input_productCategory);
+                    input_productCategory.setShadowColorDark(Color.rgb(217, 217, 217));
+                    input_productCategory.setShadowColorLight(Color.WHITE);
+
+                    input_productPrice = (NeumorphCardView) findViewById(R.id.input_productPrice);
+                    input_productPrice.setShadowColorDark(Color.rgb(217, 217, 217));
+                    input_productPrice.setShadowColorLight(Color.WHITE);
+
+                    createQRBtn = (NeumorphButton) findViewById(R.id.createQRBtn);
+                    createQRBtn.setBackgroundColor(Color.rgb(0, 174, 142));
+                    createQRBtn.setShadowColorDark(Color.rgb(217, 217, 217));
+                    createQRBtn.setShadowColorLight(Color.WHITE);
+
+                    createProductBtn = (NeumorphButton) findViewById(R.id.createProductBtn);
+                    createProductBtn.setBackgroundColor(Color.rgb(0, 174, 142));
+                    createProductBtn.setShadowColorDark(Color.rgb(217, 217, 217));
+                    createProductBtn.setShadowColorLight(Color.WHITE);
+
+                    // 라이트모드에 맞는 이미지로 변경
+                    adminList = (ImageView) findViewById(R.id.adminList);
+                    adminList.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+                    call = (ImageView) findViewById(R.id.call);
+                    call.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+                    adminLogin = (ImageView) findViewById(R.id.adminLogin);
+                    adminLogin.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+                    adminSchedule = (ImageView) findViewById(R.id.adminSchedule);
+                    adminSchedule.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+                    // 하단 메뉴
+                    usersIcon = (NeumorphImageView)  findViewById(R.id.memberBtn);
+                    usersIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    usersIcon.setShadowColorDark(Color.rgb(217, 217, 217));
+                    usersIcon.setShadowColorLight(Color.WHITE);
+
+                    productIcon = (NeumorphImageView) findViewById(R.id.productBtn);
+                    productIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    productIcon.setShadowColorDark(Color.rgb(217, 217, 217));
+                    productIcon.setShadowColorLight(Color.WHITE);
+
+                    homeIcon = (NeumorphImageView) findViewById(R.id.homeBtn);
+                    homeIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    homeIcon.setShadowColorDark(Color.rgb(217, 217, 217));
+                    homeIcon.setShadowColorLight(Color.WHITE);
+
+                    paymentIcon = (NeumorphImageView) findViewById(R.id.payHistoryBtn);
+                    paymentIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    paymentIcon.setShadowColorDark(Color.rgb(217, 217, 217));
+                    paymentIcon.setShadowColorLight(Color.WHITE);
+
+                    productRegisterIcon = (NeumorphImageView) findViewById(R.id.productPushBtn);
+                    productRegisterIcon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    productRegisterIcon.setShadowColorDark(Color.rgb(217, 217, 217));
+                    productRegisterIcon.setShadowColorLight(Color.WHITE);
+
+                    setting = (NeumorphImageView) findViewById(R.id.setting);
+                    setting.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    setting.setShadowColorDark(Color.rgb(217, 217, 217));
+                    setting.setShadowColorLight(Color.WHITE);
+
+                    // Mode Image 및 색상 변경
+                    changeMode.setImageResource(R.drawable.dark);
+                    changeMode.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                    changeMode.setShadowColorDark(Color.rgb(217, 217, 217));
+                    changeMode.setShadowColorLight(Color.WHITE);
+
+                    mode--;
+                }
+                else {
+                    showErrorDialog(MainActivity.this, "임성준");
+                }
             }
         });
 
@@ -240,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
                 // Login 페이지로 이동 및 메인페이지 배경색상 전달
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 intent.putExtra("background_color", backgroundColor);
+                intent.putExtra("mode", mode);
                 startActivity(intent);
             }
         });
@@ -348,62 +507,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    public void changeColor() {
-//
-//    }
-
-
-    private void changeDarkTextColor(View view, int color) {
-        if (view instanceof TextView) {
-            // 만약 뷰가 TextView라면 색상 변경
-            ((TextView) view).setTextColor(color);
-        } else if (view instanceof ViewGroup) {
-            // 만약 뷰가 ViewGroup이라면 해당 ViewGroup 안에 있는 모든 뷰에 대해 재귀적으로 색상 변경
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                changeDarkTextColor(viewGroup.getChildAt(i), color);
-            }
+    private ArrayList<MemberData> createFakeData() {
+        ArrayList<MemberData> dataList = new ArrayList<>();
+        for (int i = 1; i <= 20; i++) {
+            // 가짜 데이터 생성 및 리스트에 추가
+            MemberData memberData = new MemberData(i, "User" + i, new Date(), i * 100);
+            dataList.add(memberData);
         }
-    }
-    private void changeLightTextColor(View view, int color) {
-        if (view instanceof TextView) {
-            // 만약 뷰가 TextView라면 색상 변경
-            ((TextView) view).setTextColor(color);
-        } else if (view instanceof ViewGroup) {
-            // 만약 뷰가 ViewGroup이라면 해당 ViewGroup 안에 있는 모든 뷰에 대해 재귀적으로 색상 변경
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                changeLightTextColor(viewGroup.getChildAt(i), color);
-            }
-        }
-    }
-    public static List<MemberData> generateFakeData(int count) {
-        List<MemberData> members = new ArrayList<>();
-
-        for (int i = 1; i <= count; i++) {
-            // 가짜 사용자 아이디 생성 (예: user1, user2, ...)
-            String userId = "user" + i;
-
-            // 가짜 가입일 생성 (현재 날짜 기준으로 무작위로 설정)
-            Date joinDate = generateRandomJoinDate();
-
-            // 가짜 포인트 생성 (0부터 2000 사이의 무작위 값 설정)
-            int point = generateRandomPoint();
-
-            // MemberData 객체 생성 및 리스트에 추가
-            members.add(new MemberData(i, userId, joinDate, point));
-        }
-        return members;
-    }
-    private static Date generateRandomJoinDate() {
-        // 현재 날짜 기준으로 30일 이내의 무작위 날짜 생성
-        long currentTimeMillis = System.currentTimeMillis();
-        long randomTimeOffset = new Random().nextInt(30 * 24 * 60 * 60 * 1000); // 30일을 밀리초로 변환
-        return new Date(currentTimeMillis - randomTimeOffset);
+        return dataList;
     }
 
-    private static int generateRandomPoint() {
-        // 0부터 2000 사이의 무작위 포인트 생성
-        return new Random().nextInt(50);
+    public static void showErrorDialog(Context context, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("오류 발생")
+                .setMessage(message)
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // 확인 버튼을 눌렀을 때 처리할 내용
+                        dialog.dismiss(); // 다이얼로그를 닫습니다.
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
