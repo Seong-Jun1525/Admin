@@ -1,12 +1,9 @@
 package kr.ac.yuhan.cs.admin;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -18,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
 import java.util.Map;
 
-import kr.ac.yuhan.cs.admin.func.ChangeTextColor;
+import kr.ac.yuhan.cs.admin.util.ChangeMode;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphCardView;
 import soup.neumorphism.NeumorphImageView;
@@ -47,49 +44,47 @@ public class AdminScheduleActivity extends AppCompatActivity {
 
         schedulePage = (LinearLayout) findViewById(R.id.schedulePage);
 
+        // 현재 mode값 받음
+        int modeValue = getIntent().getIntExtra("mode", 1);
+
         // MainActivity에서 전달된 배경 색상 값을 받음
         int backgroundColor = getIntent().getIntExtra("background_color", Color.rgb(236, 240, 243));
         // 배경 색상을 설정
         View backgroundView = getWindow().getDecorView().getRootView();
         backgroundView.setBackgroundColor(backgroundColor);
 
-        if(backgroundColor == -10395295) {
-
-            // 폰트 색상 변경
-            ChangeTextColor.changeDarkTextColor(schedulePage, Color.WHITE);
-
-
-            backBtn = (NeumorphImageView) findViewById(R.id.backBtn);
-            backBtn.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-            backBtn.setShadowColorLight(Color.GRAY);
-            backBtn.setShadowColorDark(Color.BLACK);
-
-            handle = (NeumorphButton) findViewById(R.id.handle);
-            handle.setShadowColorLight(Color.GRAY);
-            handle.setShadowColorDark(Color.BLACK);
-
-            scheduleCardView = (NeumorphCardView) findViewById(R.id.scheduleCardView);
-            scheduleCardView.setShadowColorLight(Color.GRAY);
-            scheduleCardView.setShadowColorDark(Color.BLACK);
-
-            scheduleRegisterCardView = (NeumorphCardView) findViewById(R.id.scheduleRegisterCardView);
-            scheduleRegisterCardView.setShadowColorLight(Color.GRAY);
-            scheduleRegisterCardView.setShadowColorDark(Color.BLACK);
-
-            input_todo = (NeumorphCardView) findViewById(R.id.input_todo);
-            input_todo.setShadowColorLight(Color.GRAY);
-            input_todo.setShadowColorDark(Color.BLACK);
-
-            addTodoButton = (NeumorphButton) findViewById(R.id.addTodoButton);
-            addTodoButton.setShadowColorLight(Color.GRAY);
-            addTodoButton.setShadowColorDark(Color.BLACK);
-        }
-
         selectedDateTextView = findViewById(R.id.selectedDateTextView);
         todoEditText = findViewById(R.id.todoEditText);
         todoTextView = findViewById(R.id.todoTextView);
         calendarView = findViewById(R.id.calendarView);
         addTodoButton = findViewById(R.id.addTodoButton);
+
+        backBtn = (NeumorphImageView) findViewById(R.id.backBtn);
+        handle = (NeumorphButton) findViewById(R.id.handle);
+        scheduleCardView = (NeumorphCardView) findViewById(R.id.scheduleCardView);
+        scheduleRegisterCardView = (NeumorphCardView) findViewById(R.id.scheduleRegisterCardView);
+        input_todo = (NeumorphCardView) findViewById(R.id.input_todo);
+        addTodoButton = (NeumorphButton) findViewById(R.id.addTodoButton);
+
+        if(modeValue == 1) {
+            // 폰트 색상 변경
+            ChangeMode.applySubTheme(schedulePage, modeValue);
+
+            ChangeMode.setColorFilterDark(backBtn);
+            ChangeMode.setDarkShadowCardView(backBtn);
+            ChangeMode.setDarkShadowCardView(handle);
+            ChangeMode.setDarkShadowCardView(scheduleCardView);
+            ChangeMode.setDarkShadowCardView(scheduleRegisterCardView);
+            ChangeMode.setDarkShadowCardView(input_todo);
+            ChangeMode.setDarkShadowCardView(addTodoButton);
+        }
+        else {
+            handle.setBackgroundColor(Color.rgb(0, 174, 142));
+            addTodoButton.setBackgroundColor(Color.rgb(0, 174, 142));
+
+            ChangeMode.setLightShadowCardView(handle);
+            ChangeMode.setLightShadowCardView(addTodoButton);
+        }
 
         // CalendarView에서 날짜가 선택되었을 때 이벤트 처리
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -122,14 +117,10 @@ public class AdminScheduleActivity extends AppCompatActivity {
                 todoEditText.getText().clear();
             }
         });
-
-        backBtn = (NeumorphImageView) findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 클릭될 때 ShapeType을 'pressed'로 변경
                 backBtn.setShapeType(1);
-                // 클릭된 후에는 다시 FLAT으로 변경
                 v.postDelayed(new Runnable() {
                     @Override
                     public void run() {

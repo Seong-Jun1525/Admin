@@ -88,7 +88,6 @@
                 android:layout_height="80dp"
                 android:textSize="35sp"
                 android:text="@string/action_sign_in_short"
-                android:textColor="@color/mainText"
                 app:neumorph_shapeType="flat" />
         </LinearLayout>
     </soup.neumorphism.NeumorphCardView>

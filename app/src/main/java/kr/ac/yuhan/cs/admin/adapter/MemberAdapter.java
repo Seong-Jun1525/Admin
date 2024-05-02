@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import kr.ac.yuhan.cs.admin.data.MemberData;
 import kr.ac.yuhan.cs.admin.R;
+import soup.neumorphism.NeumorphImageView;
 
 
 public class MemberAdapter extends BaseAdapter {
@@ -95,7 +97,7 @@ public class MemberAdapter extends BaseAdapter {
         TextView numberTextView;
         TextView userIdTextView;
         TextView userPointTextView;
-        Button outBtn; // outBtn 추가
+        ImageView outBtn; // outBtn 추가
     }
 }
 
