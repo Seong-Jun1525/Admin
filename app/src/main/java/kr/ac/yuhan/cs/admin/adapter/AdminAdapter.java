@@ -9,30 +9,31 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.ArrayList;
-import kr.ac.yuhan.cs.admin.data.MemberData;
+
 import kr.ac.yuhan.cs.admin.R;
+import kr.ac.yuhan.cs.admin.data.AdminData;
 
-
-public class MemberAdapter extends BaseAdapter {
-    private ArrayList<MemberData> memberList;
+public class AdminAdapter extends BaseAdapter {
+    private ArrayList<AdminData> adminList;
     private LayoutInflater inflater;
     private Context context; // Context 추가
 
-    public MemberAdapter(Context context, ArrayList<MemberData> memberList) {
+    public AdminAdapter(Context context, ArrayList<AdminData> adminList) {
         this.context = context;
-        this.memberList = memberList;
+        this.adminList = adminList;
         this.inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount() {
-        return memberList.size();
+        return adminList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return memberList.get(position);
+        return adminList.get(position);
     }
 
     @Override
@@ -42,26 +43,26 @@ public class MemberAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        AdminAdapter.ViewHolder viewHolder;
 
         if (convertView == null) {
             // 뷰홀더 초기화
-            convertView = inflater.inflate(R.layout.member_list, parent, false);
-            viewHolder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.admin_list, parent, false);
+            viewHolder = new AdminAdapter.ViewHolder();
             viewHolder.numberTextView = convertView.findViewById(R.id.number);
-            viewHolder.userIdTextView = convertView.findViewById(R.id.userId);
-            viewHolder.userPointTextView = convertView.findViewById(R.id.userPoint);
+            viewHolder.adminIdTextView = convertView.findViewById(R.id.adminId);
+            viewHolder.userPostitionTextView = convertView.findViewById(R.id.adminPosition);
             viewHolder.outBtn = convertView.findViewById(R.id.outBtn); // outBtn 초기화
             convertView.setTag(viewHolder);
         } else {
             // 뷰홀더 재사용
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (AdminAdapter.ViewHolder) convertView.getTag();
         }
 
-        MemberData memberData = memberList.get(position);
-        viewHolder.numberTextView.setText(String.valueOf(memberData.getNumber()));
-        viewHolder.userIdTextView.setText(memberData.getUserId());
-        viewHolder.userPointTextView.setText(String.valueOf(memberData.getPoint()));
+        AdminData adminData = adminList.get(position);
+        viewHolder.numberTextView.setText(String.valueOf(adminData.getAdminNum()));
+        viewHolder.adminIdTextView.setText(adminData.getAdminId());
+        viewHolder.userPostitionTextView.setText(String.valueOf(adminData.getAdminPosition()));
 
         // 삭제 버튼 클릭 이벤트 리스너 설정
         viewHolder.outBtn.setOnClickListener(new View.OnClickListener() {
@@ -87,14 +88,14 @@ public class MemberAdapter extends BaseAdapter {
 
     // 데이터 삭제 메서드
     public void removeMember(int position) {
-        memberList.remove(position);
+        adminList.remove(position);
         notifyDataSetChanged(); // 변경된 데이터셋을 알려 ListView를 갱신
     }
 
     static class ViewHolder {
         TextView numberTextView;
-        TextView userIdTextView;
-        TextView userPointTextView;
+        TextView adminIdTextView;
+        TextView userPostitionTextView;
         ImageView outBtn; // outBtn 추가
     }
 }

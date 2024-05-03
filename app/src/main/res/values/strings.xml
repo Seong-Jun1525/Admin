@@ -10,7 +10,14 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="main_text">Yuhan19+</string>
+
+    <!-- Page Title -->
     <string name="login_title">Yuhan 19+ Admin</string>
+
+    <!-- 관리자 목록 페이지 -->
+    <string name="adminList_title">관리자 목록</string>
+    <string name="searchAdminIdHint">관리자 ID를 입력하세요</string>
+
     <!-- 모드 -->
     <string name="dark_mode">Dark</string>
     <string name="light_mode">Light</string>
@@ -31,6 +38,9 @@
     <!-- User 메뉴 -->
     <string name="search">검색</string>
     <string name="searchIdHint">회원ID를 입력하세요</string>
+
+    <!-- 결제 내역 메뉴-->
+    <string name="paySearchIdHint">회원ID를 입력하세요</string>
 
     <!-- 상품등록 메뉴 -->
     <string name="productNameTitle">상품명</string>

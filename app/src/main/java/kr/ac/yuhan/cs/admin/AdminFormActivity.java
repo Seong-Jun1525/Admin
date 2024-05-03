@@ -32,9 +32,9 @@ public class AdminFormActivity extends AppCompatActivity {
         backgroundView.setBackgroundColor(backgroundColor);
 
         NeumorphCardView adminAddCardView = (NeumorphCardView) findViewById(R.id.adminAddCardView);
-        NeumorphCardView input_adminId = (NeumorphCardView) findViewById(R.id.input_adminId);
-        NeumorphCardView input_adminPW = (NeumorphCardView) findViewById(R.id.input_adminPW);
-        NeumorphCardView input_adminPosition = (NeumorphCardView) findViewById(R.id.input_adminPosition);
+        NeumorphCardView editTextIdField = (NeumorphCardView) findViewById(R.id.editTextIdField);
+        NeumorphCardView editTextPwField = (NeumorphCardView) findViewById(R.id.editTextPwField);
+        NeumorphCardView editTextPositionField = (NeumorphCardView) findViewById(R.id.editTextPositionField);
         NeumorphButton adminAddBtn = (NeumorphButton) findViewById(R.id.adminAddBtn);
 
         backBtn = (NeumorphImageView) findViewById(R.id.backBtn);
@@ -45,9 +45,9 @@ public class AdminFormActivity extends AppCompatActivity {
             ChangeMode.setColorFilterDark(backBtn);
             ChangeMode.setDarkShadowCardView(backBtn);
             ChangeMode.setDarkShadowCardView(adminAddCardView);
-            ChangeMode.setDarkShadowCardView(input_adminId);
-            ChangeMode.setDarkShadowCardView(input_adminPW);
-            ChangeMode.setDarkShadowCardView(input_adminPosition);
+            ChangeMode.setDarkShadowCardView(editTextIdField);
+            ChangeMode.setDarkShadowCardView(editTextPwField);
+            ChangeMode.setDarkShadowCardView(editTextPositionField);
             ChangeMode.setDarkShadowCardView(adminAddBtn);
         }
         else {

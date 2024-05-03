@@ -1,5 +1,8 @@
 package kr.ac.yuhan.cs.admin;
 
+import static kr.ac.yuhan.cs.admin.db.DatabaseHelper.COLUMN_CONTENT;
+
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
 import java.util.Map;
 
+import kr.ac.yuhan.cs.admin.db.DatabaseHelper;
 import kr.ac.yuhan.cs.admin.util.ChangeMode;
 import soup.neumorphism.NeumorphButton;
 import soup.neumorphism.NeumorphCardView;
@@ -34,6 +38,8 @@ public class AdminScheduleActivity extends AppCompatActivity {
     private NeumorphButton handle;
     private NeumorphImageView backBtn;
 
+    private DatabaseHelper dbHelper;
+
     // Map to store tasks for each date
     private Map<String, String> tasks = new HashMap<>();
 
@@ -41,6 +47,8 @@ public class AdminScheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_schedule);
+
+        dbHelper = new DatabaseHelper(this);
 
         schedulePage = (LinearLayout) findViewById(R.id.schedulePage);
 
@@ -87,6 +95,7 @@ public class AdminScheduleActivity extends AppCompatActivity {
         }
 
         // CalendarView에서 날짜가 선택되었을 때 이벤트 처리
+        // CalendarView에서 날짜가 선택되었을 때 이벤트 처리
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
@@ -95,25 +104,36 @@ public class AdminScheduleActivity extends AppCompatActivity {
                 selectedDateTextView.setText("선택된 날짜 : " + selectedDate);
 
                 // 선택된 날짜에 해당하는 할일을 표시
-                String task = tasks.get(selectedDate);
-                if (task != null) {
-                    todoTextView.setText("선택된 날짜의 할일 목록\n" + task + "\n");
+                Cursor cursor = dbHelper.getTodosByDate(selectedDate);
+                if (cursor != null && cursor.moveToFirst()) {
+                    String task = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT));
+                    todoTextView.setText("선택된 날짜의 할일 목록\n" + task);
                 } else {
                     todoTextView.setText("선택된 날짜의 할일이 없습니다.");
                 }
+
+                // Cursor를 닫음
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         });
+
 
         // 할일 추가 버튼 클릭 이벤트 처리
         addTodoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selectedDate = selectedDateTextView.getText().toString().replace("Selected Date: ", "");
+                String selectedDate = selectedDateTextView.getText().toString().replace("선택된 날짜 : ", "");
                 String task = todoEditText.getText().toString();
 
                 // 선택된 날짜에 해당하는 할일을 저장
-                tasks.put(selectedDate, task);
-                todoTextView.setText("Tasks for selected date: " + task);
+                boolean isInserted = dbHelper.addTodo(selectedDate, task);
+                if (isInserted) {
+                    todoTextView.setText("할일이 추가되었습니다.");
+                } else {
+                    todoTextView.setText("할일 추가에 실패하였습니다.");
+                }
                 todoEditText.getText().clear();
             }
         });

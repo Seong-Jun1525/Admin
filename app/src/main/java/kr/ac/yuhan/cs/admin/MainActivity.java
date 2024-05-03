@@ -57,6 +57,17 @@ public class MainActivity extends AppCompatActivity {
     private NeumorphCardView callBtn;
     private NeumorphCardView login;
 
+    // HOME 메뉴 이미지
+    private ImageView adminSchedule;
+    private ImageView adminList;
+    private ImageView adminLogin;
+    private ImageView call;
+
+    // 결제내역 메뉴
+    private NeumorphButton paySearchBtn;
+    private NeumorphCardView payListCardView;
+    private NeumorphCardView input_searchIdPay;
+
     // 상품등록 메뉴
     private NeumorphCardView input_productImage;
     private NeumorphCardView input_productName;
@@ -69,12 +80,6 @@ public class MainActivity extends AppCompatActivity {
     // 상단 버튼 이미지
     private NeumorphImageView setting;
     private NeumorphImageView changeMode;
-
-    // HOME 메뉴 이미지
-    private ImageView adminSchedule;
-    private ImageView adminList;
-    private ImageView adminLogin;
-    private ImageView call;
 
     // 배경 기본색
     private int backgroundColor;
@@ -126,6 +131,11 @@ public class MainActivity extends AppCompatActivity {
         userSearchBtn = (NeumorphButton) findViewById(R.id.userSearchBtn);
         userListCardView = (NeumorphCardView) findViewById(R.id.userListCardView);
 
+        // Payment List Id
+        paySearchBtn = (NeumorphButton) findViewById(R.id.paySearchBtn);
+        payListCardView = (NeumorphCardView) findViewById(R.id.payListCardView);
+        input_searchIdPay =(NeumorphCardView) findViewById(R.id.input_searchIdPay);
+
         // Product Register Page Id
         input_productImage = (NeumorphCardView) findViewById(R.id.input_productImage);
         input_productName = (NeumorphCardView) findViewById(R.id.input_productName);
@@ -147,27 +157,14 @@ public class MainActivity extends AppCompatActivity {
         createQRBtn.setBackgroundColor(btnColor);
         createProductBtn.setBackgroundColor(btnColor);
         userSearchBtn.setBackgroundColor(btnColor);
+        paySearchBtn.setBackgroundColor(btnColor);
 
+        // MainActivity Home Menu CardView Id
         login = (NeumorphCardView) findViewById(R.id.login);
         adminBtn = (NeumorphCardView) findViewById(R.id.adminBtn);
         adminScheduleBtn = (NeumorphCardView) findViewById(R.id.adminScheduleBtn);
-
         callBtn = (NeumorphCardView) findViewById(R.id.callBtn);
-        callBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 클릭될 때 ShapeType을 'pressed'로 변경
-                callBtn.setShapeType(1);
-                // 클릭된 후에는 다시 FLAT으로 변경
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {callBtn.setShapeType(0);}
-                }, 200);
 
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:/010-1234-1234"));
-                startActivity(intent);
-            }
-        });
         // 리스트뷰 아이템 클릭 리스너 설정
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -175,6 +172,22 @@ public class MainActivity extends AppCompatActivity {
                 // 클릭된 아이템의 정보를 가져옴
                 MemberData selectedItem = fakeDataList.get(position);
                 showMemberInfoDialog(selectedItem);
+            }
+        });
+
+        setting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setting.setShapeType(1);
+                v.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {setting.setShapeType(0);}
+                }, 200);
+                // Setting 페이지로 이동 및 메인페이지 배경색상 전달
+                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                intent.putExtra("background_color", backgroundColor);
+                intent.putExtra("mode", mode);
+                startActivity(intent);
             }
         });
         changeMode.setOnClickListener(new View.OnClickListener() {
@@ -208,6 +221,12 @@ public class MainActivity extends AppCompatActivity {
                     ChangeMode.setDarkShadowCardView(adminScheduleBtn);
                     ChangeMode.setDarkShadowCardView(callBtn);
                     ChangeMode.setDarkShadowCardView(login);
+
+                    // 결제내역 페이지 CardView
+                    ChangeMode.setColorFilterLight(paySearchBtn);
+                    ChangeMode.setDarkShadowCardView(paySearchBtn);
+                    ChangeMode.setDarkShadowCardView(payListCardView);
+                    ChangeMode.setDarkShadowCardView(input_searchIdPay);
 
                     // 상품등록 페이지 CardView
                     ChangeMode.setDarkShadowCardView(input_productImage);
@@ -267,6 +286,12 @@ public class MainActivity extends AppCompatActivity {
                     ChangeMode.setLightShadowCardView(callBtn);
                     ChangeMode.setLightShadowCardView(login);
 
+                    // 결제내역 페이지 CardView
+                    ChangeMode.setColorFilterLight(paySearchBtn);
+                    ChangeMode.setLightShadowCardView(paySearchBtn);
+                    ChangeMode.setLightShadowCardView(payListCardView);
+                    ChangeMode.setLightShadowCardView(input_searchIdPay);
+
                     // 상품등록 페이지 CardView
                     ChangeMode.setLightShadowCardView(input_productImage);
                     ChangeMode.setLightShadowCardView(input_productName);
@@ -308,18 +333,49 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        setting.setOnClickListener(new View.OnClickListener() {
+
+        adminBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setting.setShapeType(1);
+                adminBtn.setShapeType(1);
                 v.postDelayed(new Runnable() {
                     @Override
-                    public void run() {setting.setShapeType(0);}
+                    public void run() {adminBtn.setShapeType(0);}
                 }, 200);
-                // Setting 페이지로 이동 및 메인페이지 배경색상 전달
-                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                // AdminList 페이지로 이동 및 메인페이지 배경색상 전달
+                Intent intent = new Intent(getApplicationContext(), AdminActivity.class);
                 intent.putExtra("background_color", backgroundColor);
                 intent.putExtra("mode", mode);
+                startActivity(intent);
+            }
+        });
+        adminScheduleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adminScheduleBtn.setShapeType(1);
+                v.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {adminScheduleBtn.setShapeType(0);}
+                }, 200);
+                // 스케쥴 관리 페이지로 이동 및 메인페이지 배경색상 전달
+                Intent intent = new Intent(getApplicationContext(), AdminScheduleActivity.class);
+                intent.putExtra("background_color", backgroundColor);
+                intent.putExtra("mode", mode);
+                startActivity(intent);
+            }
+        });
+        callBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 클릭될 때 ShapeType을 'pressed'로 변경
+                callBtn.setShapeType(1);
+                // 클릭된 후에는 다시 FLAT으로 변경
+                v.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {callBtn.setShapeType(0);}
+                }, 200);
+
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:/010-1234-1234"));
                 startActivity(intent);
             }
         });
@@ -338,17 +394,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        userBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userBtn.setShapeType(1);
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {userBtn.setShapeType(0);}
-                }, 200);
-                vFlipper.setDisplayedChild(1);
-            }
-        });
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -361,7 +406,17 @@ public class MainActivity extends AppCompatActivity {
                 vFlipper.setDisplayedChild(0);
             }
         });
-
+        userBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userBtn.setShapeType(1);
+                v.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {userBtn.setShapeType(0);}
+                }, 200);
+                vFlipper.setDisplayedChild(1);
+            }
+        });
         productBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -371,16 +426,6 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {productBtn.setShapeType(0);}
                 }, 200);
                 vFlipper.setDisplayedChild(2);
-            }
-        });
-        adminBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adminBtn.setShapeType(1);
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {adminBtn.setShapeType(0);}
-                }, 200);
             }
         });
         payHistoryBtn.setOnClickListener(new View.OnClickListener() {
@@ -403,21 +448,6 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {productPushBtn.setShapeType(0);}
                 }, 200);
                 vFlipper.setDisplayedChild(4);
-            }
-        });
-        adminScheduleBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                adminScheduleBtn.setShapeType(1);
-                v.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {adminScheduleBtn.setShapeType(0);}
-                }, 200);
-                // 스케쥴 관리 페이지로 이동 및 메인페이지 배경색상 전달
-                Intent intent = new Intent(getApplicationContext(), AdminScheduleActivity.class);
-                intent.putExtra("background_color", backgroundColor);
-                intent.putExtra("mode", mode);
-                startActivity(intent);
             }
         });
     }
@@ -449,7 +479,7 @@ public class MainActivity extends AppCompatActivity {
     private void showMemberInfoDialog(MemberData selectedItem) {
         // 다이얼로그를 생성하고 레이아웃을 설정
         Dialog dialog = new Dialog(MainActivity.this);
-        dialog.setContentView(R.layout.dialog_item_info);
+        dialog.setContentView(R.layout.dialog_user_item_info);
 
         // 다이얼로그 내의 TextView를 가져와서 멤버 정보로 설정
         TextView textViewMemberId = dialog.findViewById(R.id.textViewUserNum);

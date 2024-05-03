@@ -19,6 +19,14 @@
             android:exported="true"
             android:label="SettingActivity" />
         <activity
+            android:name=".AdminActivity"
+            android:exported="true"
+            android:label="AdminActivity" />
+        <activity
+            android:name=".AdminScheduleActivity"
+            android:exported="true"
+            android:label="AdminScheduleActivity" />
+        <activity
             android:name=".AdminFormActivity"
             android:exported="true"
             android:label="AdminFormActivity" />
@@ -35,10 +43,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".AdminScheduleActivity"
-            android:exported="true"
-            android:label="AdminScheduleActivity" />
     </application>
 
 </manifest>

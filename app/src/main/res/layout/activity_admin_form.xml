@@ -31,13 +31,14 @@
                 android:textStyle="bold"/>
             <soup.neumorphism.NeumorphCardView
                 style="@style/Widget.Neumorph.CardView"
-                android:id="@+id/input_adminId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/editTextIdField"
                 android:padding="25dp">
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
+                    android:id="@+id/input_adminId"
                     android:padding="15dp"
                     android:hint="Admin ID"
                     android:inputType="text"
@@ -45,13 +46,14 @@
             </soup.neumorphism.NeumorphCardView>
             <soup.neumorphism.NeumorphCardView
                 style="@style/Widget.Neumorph.CardView"
-                android:id="@+id/input_adminPW"
+                android:id="@+id/editTextPwField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="25dp">
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
+                    android:id="@+id/input_adminPW"
                     android:padding="15dp"
                     android:hint="Admin PW"
                     android:inputType="textPassword"
@@ -59,13 +61,14 @@
             </soup.neumorphism.NeumorphCardView>
             <soup.neumorphism.NeumorphCardView
                 style="@style/Widget.Neumorph.CardView"
-                android:id="@+id/input_adminPosition"
+                android:id="@+id/editTextPositionField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="25dp">
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
+                    android:id="@+id/input_adminPosition"
                     android:padding="15dp"
                     android:hint="관리자 직책"
                     android:inputType="text"
